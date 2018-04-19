@@ -1,0 +1,15 @@
+{
+  "id": "RecipeInstaller",
+  "name": "Plugin installer",
+  "version": "1.0.0",
+  "description": "install and manage plugins using git",
+  "main": "index.js",
+  "author": "Indy Koning",
+  "license": "MIT",
+  "config": {
+	"serviceURL": "http://localhost:3000"
+},
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}

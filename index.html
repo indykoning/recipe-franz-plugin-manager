@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plugin installer</title>
+  <meta name="description" content="A plugin installer for Franz">
+  <meta name="author" content="Indy Koning">
+</head>
+<body>
+  <h1>test</h1>
+<div id="response"></div>
+</body>
+<script>
+    let recipeList = [];
+    let request = new XMLHttpRequest();
+    request.open("GET", "http://localhost:3000/api/plugins");
+    request.addEventListener("load", (e) => {recipeList = JSON.parse(e.target.responseText); console.log(recipeList); document.getElementById('response').innerHTML = e.target.responseText});
+    request.send();
+</script>
+</html>
