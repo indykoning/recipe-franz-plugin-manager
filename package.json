@@ -7,9 +7,10 @@
   "author": "Indy Koning",
   "license": "MIT",
   "config": {
-	"serviceURL": "http://localhost:3000"
-},
+    "serviceURL": "http://localhost:3000"
+  },
   "dependencies": {
+    "body-parser": "^1.18.2",
     "express": "^4.16.3"
   }
 }

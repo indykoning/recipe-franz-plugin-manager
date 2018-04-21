@@ -7,14 +7,66 @@
   <meta name="author" content="Indy Koning">
 </head>
 <body>
-  <h1>test</h1>
+<form onsubmit="submitForm(event)" method="post" action="/api/plugin/add">
+    <input type="text" id="repository" name="repository">
+    <input type="submit">
+</form>
 <div id="response"></div>
+
+</div>
+<h2>installed plugins</h2>
+<table id="pluginList">
+</table>
 </body>
 <script>
     let recipeList = [];
-    let request = new XMLHttpRequest();
-    request.open("GET", "http://localhost:3000/api/plugins");
-    request.addEventListener("load", (e) => {recipeList = JSON.parse(e.target.responseText); console.log(recipeList); document.getElementById('response').innerHTML = e.target.responseText});
-    request.send();
+    let xhr = new XMLHttpRequest();
+
+    xhr.open("GET", "http://localhost:3000/api/plugin/list");
+    xhr.onload = (e) => {
+        recipeList = JSON.parse(e.target.responseText);
+        let table = document.getElementById('pluginList');
+        recipeList.forEach(recipe => {
+            let row = document.createElement('tr');
+            let nameTd = document.createElement('td');
+            let deleteTd = document.createElement('td');
+            deleteTd.innerHTML =    '<form onsubmit="submitForm(event)" method="delete" action="/api/plugin/remove">' +
+                                    '<input type="hidden" name="recipe" value="' + recipe.directory.substring(recipe.directory.lastIndexOf("/") + 1) + '">' +
+                                    '<input type="submit" value="delete">' +
+                                    '</form>';
+            nameTd.title = recipe.directory;
+            nameTd.innerText = recipe.friendlyName;
+
+
+            row.appendChild(nameTd);
+            row.appendChild(deleteTd);
+            table.appendChild(row);
+        });
+    };
+    xhr.send();
+
+    function submitForm(e){
+        e.preventDefault();
+        let formData = new FormData(e.target);
+        let body = [...formData.entries()] // expand the elements from the .entries() iterator into an actual array
+            .map(e => encodeURIComponent(e[0]) + "=" + encodeURIComponent(e[1]))  // transform the elements into encoded key-value-pair
+
+        xhr.open(e.target.getAttribute('method') ? e.target.getAttribute('method') : e.target.method, e.target.action, true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.onload = (e) => {
+            let json = JSON.parse(e.target.responseText);
+            switch (json.type){
+                case 'clone':
+                        document.getElementById('response').innerText = json.result.error !== undefined ? json.result.error : 'Successfully added! To complete installation you\'ll have to restart Franz.';
+                    break;
+                case 'delete':
+                    document.getElementById('response').innerText = json.result
+                    break;
+                default:
+                    document.getElementById('response').innerText = e.target.responseText;
+            }
+        };
+        xhr.send(body);
+    }
 </script>
 </html>
