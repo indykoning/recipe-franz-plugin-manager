@@ -1,6 +1,6 @@
 {
   "id": "RecipeInstaller",
-  "name": "Plugin installer",
+  "name": "Plugin_installer",
   "version": "1.0.0",
   "description": "install and manage plugins using git",
   "main": "index.js",
