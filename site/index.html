@@ -5,17 +5,18 @@
   <title>Plugin installer</title>
   <meta name="description" content="A plugin installer for Franz">
   <meta name="author" content="Indy Koning">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" />
 </head>
-<body>
-<form onsubmit="submitForm(event)" method="post" action="/api/plugin/add">
-    <input type="text" id="repository" name="repository">
-    <input type="submit">
+<body class="container">
+<form style="margin-top: 100px; width: 100%; text-align: center" onsubmit="submitForm(event)" method="post" action="/api/plugin/add">
+    <input type="text" placeholder="https://___.git" id="repository" name="repository">
+    <input type="submit" value="Add">
 </form>
-<div id="response"></div>
+<div style="text-align: center" id="response"></div>
 
 </div>
-<h2>installed plugins</h2>
-<table id="pluginList">
+<h2 style="text-align: center">installed plugins</h2>
+<table style="margin: 0 auto" id="pluginList">
 </table>
 </body>
 <script>
@@ -30,7 +31,7 @@
             let row = document.createElement('tr');
             let nameTd = document.createElement('td');
             let deleteTd = document.createElement('td');
-            deleteTd.innerHTML =    '<form onsubmit="submitForm(event)" method="delete" action="/api/plugin/remove">' +
+            deleteTd.innerHTML =    '<form onsubmit="if(confirm(\'Are you sure you want to uninstall this plugin?\')){submitForm(event)}" class="deleteform" method="delete" action="/api/plugin/remove">' +
                                     '<input type="hidden" name="recipe" value="' + recipe.directory.substring(recipe.directory.lastIndexOf("/") + 1) + '">' +
                                     '<input type="submit" value="delete">' +
                                     '</form>';
@@ -59,8 +60,8 @@
                 case 'clone':
                         document.getElementById('response').innerText = json.result.error !== undefined ? json.result.error : 'Successfully added! To complete installation you\'ll have to restart Franz.';
                     break;
-                case 'delete':
-                    document.getElementById('response').innerText = json.result
+                case 'remove':
+                    document.getElementById('response').innerText = json.result;
                     break;
                 default:
                     document.getElementById('response').innerText = e.target.responseText;
@@ -69,4 +70,12 @@
         xhr.send(body);
     }
 </script>
+<style>
+    td {
+        padding: 0 15px;
+    }
+    .deleteform {
+        margin-bottom: auto;
+    }
+</style>
 </html>
