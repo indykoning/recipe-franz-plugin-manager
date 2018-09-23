@@ -38,7 +38,7 @@ const { exec, execSync }            = require('child_process');
         res.json({type:'remove',result:'successfully removed!'})
     });
 
-    app.listen(3000, () => console.log('App listening on port 3000!'));
+    app.listen(require(__dirname + '/package.json').config.serviceURL.split(":").pop(), () => {});
 
     function getRecipes(directory, force = false) {
         if (gitRecipes.length === 0 || !hasScannedRecipes || force) {

@@ -23,7 +23,7 @@
     let recipeList = [];
     let xhr = new XMLHttpRequest();
 
-    xhr.open("GET", "http://localhost:3000/api/plugin/list");
+    xhr.open("GET", "http://localhost:" + window.location.port + "/api/plugin/list");
     xhr.onload = (e) => {
         recipeList = JSON.parse(e.target.responseText);
         let table = document.getElementById('pluginList');
