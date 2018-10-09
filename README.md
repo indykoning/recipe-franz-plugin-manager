@@ -19,3 +19,8 @@ Your system needs to have:
 
 ## Ideas
  * If possible catch exceptions of franz not finding recipies and attempt to resolve the recipies
+
+### Disclaimer
+I am not a NodeJS programmer, i just had an idea and tried to make it.
+
+Pull requests to improve the back/front-end are more than welcome.
