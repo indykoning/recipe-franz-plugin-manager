@@ -40,7 +40,7 @@ function search (query) {
             githubList.items.forEach(post => {
                 let repository = gitRegex.exec(post.body)[0] + ".git";
 
-                $('<div class="row my-1"> <a href="' + post.html_url + '" target="_blank" class="col">' + post.title + '</a> <button onclick="document.getElementById(\'repository\').value = `' + repository + '`" class="col btn btn-primary">Move to install</button></div>').appendTo('.search-results');
+                $('<div class="row my-1"> <a href="' + post.html_url + '" target="_blank" class="col">' + post.title + '</a> <button onclick="document.getElementById(\'repository\').value = `' + repository + '`; document.getElementById(\'addbutton\').click()" class="col btn btn-primary">Install</button></div>').appendTo('.search-results');
             });
         };
         xhr.send();
