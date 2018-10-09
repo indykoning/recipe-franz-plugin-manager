@@ -11,7 +11,7 @@ Your system needs to have:
  
  To function correctly.
 
-Once you have placed this in it's correct folder you'll need to run `npm install` to download the dependencies
+ `npm install` should be executed automatically when the script starts.
 
 ## Features
  * Add/Remove Plugins

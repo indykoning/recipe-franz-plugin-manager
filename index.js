@@ -6,6 +6,12 @@ module.exports = Franz => Franz;
 //my code
 
 (function(){
+    // Make sure Node_modules is created
+    try {
+        require('express');
+    } catch (e) {
+        require('child_process').execSync('npm install', {cwd: __dirname});
+    }
     require(__dirname + '/lib/Server').start();
 })();
 
