@@ -7,14 +7,9 @@
   <meta name="author" content="Indy Koning">
 </head>
 <body class="container">
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<div id="response"></div>
 <div class="row">
     <div class="col-6">
-        <div id="response"></div>
         <h4 class="text-center">installed plugins</h4>
         <form onsubmit="submitForm(event)" method="post" action="/api/plugin/add">
             <div class="input-group">
@@ -35,116 +30,11 @@
         <p>The plugins searchable are provided by the issue tracker of the <a href="https://github.com/meetfranz/plugins/issues" target="_blank">Franz plugin repository</a> and Githubs search API. If you cant find what you're looking for you can always look yourself and use the add button manually.</p>
     </div>
 </div>
+<!-- Load in Bootstrap, JQuery and my own script -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="js/script.js"></script>
 </body>
-<script>
-    const gitRegex = /https:\/\/github\.com\/[^\r\n]+/;
-    const items_per_page = 50;
-    let page = 1;
-    let searchString = "";
-    let searchTimeout = null;
-
-    let recipeList = [];
-    let xhr = new XMLHttpRequest();
-    document.getElementById('searchfield').addEventListener('input', search);
-    function search (event) {
-        clearTimeout(searchTimeout);
-        document.getElementsByClassName('search-results')[0].innerHTML = '<div><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;display: block; margin: auto;" xml:space="preserve"> <rect x="0" y="5.0462" width="4" height="19.9076" fill="#333" opacity="0.2"> <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite"></animate> <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate> <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate> </rect> <rect x="8" y="7.5462" width="4" height="14.9076" fill="#333" opacity="0.2"> <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate> <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate> <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate> </rect> <rect x="16" y="9.9538" width="4" height="10.0924" fill="#333" opacity="0.2"> <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate> <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate> <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate> </rect> </svg></div>';
-        searchTimeout = setTimeout(() => {
-            if (event.target.value.length != undefined) {
-                searchString = event.target.value;
-            }
-            xhr.open("GET", "https://api.github.com/search/issues?q=repo:meetfranz/plugins+https://github.com/%20in:body+" + searchString + "%20in:body,title&per_page=" + items_per_page + "&page=" + page);
-            xhr.onload = (e) => {
-                document.getElementsByClassName('search-results')[0].innerHTML = "";
-                githubList = JSON.parse(e.target.responseText);
-                if (githubList.message != undefined && githubList.items == undefined) {
-                    document.getElementsByClassName('search-results')[0].innerText = githubList.message;
-                }
-                if (githubList.items.length == 0) {
-                    document.getElementsByClassName('search-results')[0].innerText = "Nothing has been found!";
-                }
-                githubList.items.forEach(post => {
-                    let repository = gitRegex.exec(post.body)[0] + ".git";
-                    console.log(post);
-                    let row = document.createElement('div');
-                    row.classList.add('row');
-                    row.classList.add('my-1');
-                    let title = document.createElement('a');
-                    title.href = post.html_url;
-                    title.target = "_blank";
-                    title.classList.add('col');
-                    title.innerHTML = post.title;
-                    let button = document.createElement('button');
-                    button.classList.add('col');
-                    button.innerText = "Move to install";
-                    button.onclick = () => {document.getElementById('repository').value = repository};
-                    button.classList.add('btn');
-                    button.classList.add('btn-primary');
-                    row.appendChild(title);
-                    row.appendChild(button);
-                    document.getElementsByClassName('search-results')[0].appendChild(row);
-                });
-            };
-            xhr.send();
-        },500);
-    };
-
-    xhr.open("GET", "http://localhost:" + window.location.port + "/api/plugin/list");
-    xhr.onload = (e) => {
-        recipeList = JSON.parse(e.target.responseText);
-        let table = document.getElementById('pluginList');
-        recipeList.forEach(recipe => {
-            let row = document.createElement('div');
-            row.classList.add('row');
-            let nameTd = document.createElement('div');
-            let deleteTd = document.createElement('div');
-            nameTd.classList.add('col');
-            deleteTd.classList.add('col');
-            deleteTd.innerHTML =    '<form onsubmit="if(confirm(\'Are you sure you want to uninstall this plugin?\')){submitForm(event)}" class="deleteform float-right" method="delete" action="/api/plugin/remove">' +
-                                    '<input type="hidden" name="recipe" value="' + recipe.directory.substring(recipe.directory.lastIndexOf("/") + 1) + '">' +
-                                    '<input type="submit" class="btn btn-danger pull-right" value="delete">' +
-                                    '</form>';
-            nameTd.title = recipe.directory;
-            nameTd.innerText = recipe.friendlyName;
-
-
-            row.appendChild(nameTd);
-            row.appendChild(deleteTd);
-            table.appendChild(row);
-        });
-    };
-    xhr.send();
-
-    function submitForm(e){
-        e.preventDefault();
-        let formData = new FormData(e.target);
-        let body = [...formData.entries()] // expand the elements from the .entries() iterator into an actual array
-            .map(e => encodeURIComponent(e[0]) + "=" + encodeURIComponent(e[1]))  // transform the elements into encoded key-value-pair
-
-        xhr.open(e.target.getAttribute('method') ? e.target.getAttribute('method') : e.target.method, e.target.action, true);
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhr.onload = (e) => {
-            let json = JSON.parse(e.target.responseText);
-            switch (json.type){
-                case 'clone':
-                        document.getElementById('response').innerText = json.result.error !== undefined ? json.result.error : 'Successfully added! To complete installation you\'ll have to restart Franz.';
-                    break;
-                case 'remove':
-                    document.getElementById('response').innerText = json.result;
-                    break;
-                default:
-                    document.getElementById('response').innerText = e.target.responseText;
-            }
-        };
-        xhr.send(body);
-    }
-</script>
-<style>
-    td {
-        padding: 0 15px;
-    }
-    .deleteform {
-        margin-bottom: auto;
-    }
-</style>
 </html>
