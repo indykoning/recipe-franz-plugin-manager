@@ -2,7 +2,7 @@
 
 Follow instructions [here](https://github.com/meetfranz/plugins/blob/master/docs/integration.md) for installation of this plugin.
 
-![Image of the plugin manager in action](https://lh6.googleusercontent.com/qX1_O9Xnd5SVRiNjnfYjZrBF9qWOkgUFpz48WmUYX-aSbcRspeNw_v50PgcMYFE4S7IHzXr9ZBTs-2zarmti=w960-h978)
+![Image of the plugin manager in action](https://drive.google.com/uc?export=view&id=1qCr4WphxyVZQjkex2pPGOVWggd2SmDj8)
 
 ## Requirements
 
