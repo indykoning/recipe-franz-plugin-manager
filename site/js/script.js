@@ -1,17 +1,25 @@
 let recipeList = [];
 let xhr = new XMLHttpRequest();
 
-// Load installed plugins.
-xhr.open("GET", "http://localhost:" + window.location.port + "/api/plugin/list");
-xhr.onload = (e) => {
-    recipeList = JSON.parse(e.target.responseText);
+function getPlugins() {
+    // Load installed plugins.
+    xhr.open("GET", "http://localhost:" + window.location.port + "/api/plugin/list");
+    xhr.onload = (e) => {
+        $('#pluginList').empty();
+        recipeList = JSON.parse(e.target.responseText);
 
-    recipeList.forEach(recipe => {
-        $('<div class="row"><div title="' + recipe.directory + '" class="col">' + recipe.friendlyName + '</div><div class="col"><form onsubmit="if(confirm(\'Are you sure you want to uninstall this plugin?\')){submitForm(event)}" class="deleteform float-right" method="delete" action="/api/plugin/remove"><input type="hidden" name="recipe" value="' + recipe.directory.substring(recipe.directory.lastIndexOf("/") + 1) + '"><input type="submit" class="btn btn-danger pull-right" value="delete"></form></div></div>').appendTo('#pluginList');
-    });
-};
-xhr.send();
-
+        recipeList.forEach(recipe => {
+            let title = '', updateForm = '', deleteForm = '';
+            title = '<div title="' + recipe.directory + '" class="col">' + recipe.friendlyName + '</div>';
+            if (recipe.hasUpdate) {
+                updateForm = '<form method="put" onsubmit="submitForm(event)" class="float-right updateform" action="/api/plugin/update"><input type="hidden" name="recipe" value="' + recipe.directory.substring(recipe.directory.lastIndexOf("/") + 1) + '"><input type="submit" class="btn btn-success pull-left" value="Update"></form>';
+            }
+            deleteForm = '<form onsubmit="if(confirm(\'Are you sure you want to uninstall this plugin?\')){submitForm(event)}" class="deleteform float-right" method="delete" action="/api/plugin/remove"><input type="hidden" name="recipe" value="' + recipe.directory.substring(recipe.directory.lastIndexOf("/") + 1) + '"><input type="submit" class="btn btn-danger pull-right" value="delete"></form>';
+            $('<div class="row">' + title +'<div class="col">' + deleteForm + updateForm +'</div></div>').appendTo('#pluginList');
+        });
+    };
+    xhr.send();
+}
 
 // Get anything containing https://github.com to a newline (A standard people are encouraged to folow)
 const gitRegex = /https:\/\/github\.com\/[^\r\n]+/;
@@ -73,6 +81,12 @@ function submitForm (e) {
                 responseDOM.className = "alert alert-success";
                 responseDOM.innerText = json.result;
                 break;
+            case 'update':
+                responseDOM.className = "alert alert-success";
+                responseDOM.innerText = json.result;
+
+                getPlugins();
+                break;
             default:
                 responseDOM.className = "alert alert-info";
                 responseDOM.innerText = e.target.responseText;
@@ -80,3 +94,4 @@ function submitForm (e) {
     };
     xhr.send(body);
 }
+getPlugins();
