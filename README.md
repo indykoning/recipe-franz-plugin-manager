@@ -18,6 +18,7 @@ Your system needs to have:
 ## Features
  * Add/Remove Plugins
  * Search for plugins
+ * Update checker and installer
 
 ## Ideas
  * If possible catch exceptions of franz not finding recipies and attempt to resolve the recipies
